@@ -1,0 +1,26 @@
+<?php
+/**
+ * CoolMS2 User organization module (http://www.coolms.com/)
+ * 
+ * @link      http://github.com/coolms/CmsUserOrg for the canonical source repository
+ * @copyright Copyright (c) 2006-2015 Altgraphic, ALC (http://www.altgraphic.com)
+ * @license   http://www.coolms.com/license/new-bsd New BSD License
+ * @author    Dmitry Popov <d.popov@altgraphic.com>
+ */
+
+namespace CmsUserOrg;
+
+?>
+<?php if (($identity = $this->cmsUserIdentity()) && $identity->getOrgMetadata()): ?>
+  <li>
+    <a href="<?= $this->url('cms-user/org', ['action' => 'update']); ?>">
+      <?= $this->translate('Edit job data', __NAMESPACE__); ?>
+    </a>
+  </li>
+<?php else: ?>
+  <li>
+    <a href="<?= $this->url('cms-user/org', ['action' => 'create']); ?>">
+      <?= $this->translate('Add job data', __NAMESPACE__); ?>
+    </a>
+  </li>
+<?php endif;
