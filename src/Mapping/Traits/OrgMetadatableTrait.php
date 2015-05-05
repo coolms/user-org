@@ -12,6 +12,7 @@ namespace CmsUserOrg\Mapping\Traits;
 
 use Doctrine\Common\Collections\ArrayCollection,
     Doctrine\Common\Collections\Collection,
+    CmsUserOrg\Exception\InvalidMetadataException,
     CmsUserOrg\Mapping\MetadataInterface;
 
 trait OrgMetadatableTrait
@@ -36,7 +37,7 @@ trait OrgMetadatableTrait
 
     /**
      * __construct
-     * 
+     *
      * Initializes metadata
      */
     public function __construct()
@@ -55,6 +56,7 @@ trait OrgMetadatableTrait
 
     /**
      * @param array|\Traversable|MetadataInterface $metadata
+     * @throws InvalidMetadataException
      */
     public function addOrgMetadata($metadata)
     {
@@ -64,9 +66,7 @@ trait OrgMetadatableTrait
             	$metadata->setUser($this);
             }
         } elseif (!is_array($metadata) && !$metadata instanceof \Traversable) {
-            throw new \InvalidArgumentException('Expected argument of type array or '
-                . 'instance of Traversable or \CmsUserOrg\Mapping\MetadataInterface, '
-                . gettype($metadata) . ' given');
+            throw InvalidMetadataException::invalidMetadataInstance($metadata);
         } else {
             foreach ($metadata as $data) {
                 $this->addOrgMetadata($data);
@@ -76,15 +76,14 @@ trait OrgMetadatableTrait
 
     /**
      * @param array|\Traversable|MetadataInterface $metadata
+     * @throws InvalidMetadataException
      */
     public function removeOrgMetadata($metadata)
     {
         if ($metadata instanceof MetadataInterface) {
             $this->getOrgMetadata()->removeElement($metadata);
         } elseif (!is_array($metadata) && !$metadata instanceof \Traversable) {
-            throw new \InvalidArgumentException('Expected argument of type array or '
-                . 'instance of Traversable or \CmsUserOrg\Mapping\MetadataInterface, '
-                . gettype($metadata) . ' given');
+            throw InvalidMetadataException::invalidMetadataInstance($metadata);
         } else {
             foreach ($metadata as $meta) {
                 $this->removeOrgMetadata($meta);

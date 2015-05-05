@@ -12,24 +12,21 @@ namespace CmsUserOrg\Mapping\Traits;
 
 use Doctrine\Common\Collections\ArrayCollection,
     Doctrine\Common\Collections\Collection,
+    CmsUserOrg\Exception\InvalidMetadataException,
     CmsUserOrg\Mapping\MetadataInterface;
 
 trait UserMetadatableTrait
 {
     /**
      * @var MetadataInterface[]
-     * 
-     * @ORM\OneToMany(targetEntity="CmsUserOrg\Mapping\MetadataInterface",
-     *      mappedBy="organization",
-     *      orphanRemoval=true,
-     *      cascade={"persist","remove"})
+     *
      * @Form\Exclude()
      */
-    protected $userMetadata;
+    protected $userMetadata = [];
 
     /**
      * __construct
-     * 
+     *
      * Initializes metadata
      */
     public function __construct()
@@ -48,16 +45,16 @@ trait UserMetadatableTrait
 
     /**
      * @param array|\Traversable|MetadataInterface $metadata
+     * @throws InvalidMetadataException
      */
     public function addUserMetadata($metadata)
     {
         if ($metadata instanceof MetadataInterface) {
             $this->getUserMetadata()->add($metadata);
         } elseif (!is_array($metadata) && !$metadata instanceof \Traversable) {
-            throw new \InvalidArgumentException('Expected argument of type array or '
-                . 'instance of Traversable or CmsUserOrg\Mapping\MetadataInterface, '
-                . gettype($metadata) . ' given');
+            throw InvalidMetadataException::invalidMetadataInstance($metadata);
         }
+
         foreach ($metadata as $data) {
             $this->addUserMetadata($data);
         }
@@ -65,16 +62,16 @@ trait UserMetadatableTrait
 
     /**
      * @param array|\Traversable|MetadataInterface $metadata
+     * @throws InvalidMetadataException
      */
     public function removeUserMetadata($metadata)
     {
         if ($metadata instanceof MetadataInterface) {
             $this->getUserMetadata()->removeElement($metadata);
         } elseif (!is_array($metadata) && !$metadata instanceof \Traversable) {
-            throw new \InvalidArgumentException('Expected argument of type array or '
-                . 'instance of Traversable or CmsUserOrg\Mapping\MetadataInterface, '
-                . gettype($metadata) . ' given');
+            throw InvalidMetadataException::invalidMetadataInstance($metadata);
         }
+
         foreach ($metadata as $data) {
             $this->removeUserMetadata($data);
         }
