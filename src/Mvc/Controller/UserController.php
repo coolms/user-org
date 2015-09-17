@@ -14,21 +14,19 @@ use Zend\Http\PhpEnvironment\Response,
     Zend\Mvc\Controller\AbstractActionController,
     Zend\Mvc\Controller\Plugin\FlashMessenger,
     Zend\View\Model\ViewModel,
-    CmsCommon\Service\DomainServiceInterface;
+    CmsUser\Service\UserServiceAwareTrait,
+    CmsUser\Service\UserServiceInterface;
 
 class UserController extends AbstractActionController
 {
-    /**
-     * @var DomainServiceInterface
-     */
-    protected $userOrgService;
+    use UserServiceAwareTrait;
 
     /**
      * __construct
      */
-    public function __construct(DomainServiceInterface $userOrgService)
+    public function __construct(UserServiceInterface $userService)
     {
-        $this->userOrgService = $userOrgService;
+        $this->setUserService($userService);
     }
 
     /**
@@ -138,37 +136,29 @@ class UserController extends AbstractActionController
             $post = [];
         }
 
-        try {
-        $form = $this->userOrgService->getForm();
+        $form = $this->getUserService()->getForm();
         $form->setAttribute('action', $url);
-        //$form->bind($data);
         $form->setElementGroup([
-            //'orgMetadata' => [
+            'orgMetadata' => [
                 'description',
                 'annotation',
                 'organization',
                 'position',
-                'since',
-                'to',
+                'experience',
                 'contactMetadata' => [
                     'phones',
                     'emails',
                     'messengers',
                 ],
-            //],
+            ],
         ]);
-        } catch (\Exception $e) {
-            echo '<pre>';
-            echo $e->getMessage();
-            //echo $e->getTraceAsString();
-            exit;
-        }
+        $form->bind($identity);
 
         $viewModel = new ViewModel();
 
         if ($post && $form->setData($post)->isValid()) {
             $data = $form->getData();
-            $this->userOrgService->getMapper()->save($data);
+            $this->getUserService()->getMapper()->save($data);
 
             $this->flashMessenger()
                 ->setNamespace($form->getName() . '-' . FlashMessenger::NAMESPACE_SUCCESS)
