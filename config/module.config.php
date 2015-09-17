@@ -11,11 +11,18 @@
 namespace CmsUserOrg;
 
 return [
-    'cmsauthorization' => [
-        'guards' => [
-            'CmsAuthorization\Guard\Route' => [
-                ['route' => 'cms-user/org', 'roles' => ['user']],
-                ['route' => 'cms-admin/user/org', 'roles' => ['admin']],
+    'cmspermissions' => [
+        'acl' => [
+            'guards' => [
+                'CmsAcl\Guard\Route' => [
+                    ['route' => 'cms-user/org', 'roles' => ['user'], 'assertion' => ['CmsUserOrg\Acl\UserActionAssertion']],
+                    ['route' => 'cms-admin/user/org', 'roles' => ['admin']],
+                ],
+            ],
+            'assertion_manager' => [
+                'factories' => [
+                    'CmsUserOrg\Acl\UserActionAssertion' => 'CmsUserOrg\Factory\Acl\UserActionAssertionFactory',
+                ],
             ],
         ],
     ],
@@ -24,9 +31,54 @@ return [
             'CmsUserOrg\Controller\Admin' => 'CmsUserOrg\Mvc\Controller\AdminController',
             'CmsUserOrg\Controller\User' => 'CmsUserOrg\Mvc\Controller\UserController',
         ],
+        'factories' => [
+            'CmsUserOrg\Mvc\Controller\UserController' => 'CmsUserOrg\Factory\Controller\UserControllerFactory',
+        ],
         'invokables' => [
             'CmsUserOrg\Mvc\Controller\AdminController' => 'CmsUserOrg\Mvc\Controller\AdminController',
-            'CmsUserOrg\Mvc\Controller\UserController' => 'CmsUserOrg\Mvc\Controller\UserController',
+        ],
+    ],
+    'navigation' => [
+        'cmsuser' => [
+            [
+                'label' => 'Add job data',
+                'text_domain' => __NAMESPACE__,
+                'route' => 'cms-user/org',
+                'params' => ['action' => 'create'],
+                'resource' => 'route/cms-user/org',
+                'privilege' => 'create',
+                'order' => 750,
+                'twbs' => [
+                    'icon' => [
+                        'type' => 'fa',
+                        'content' => 'pencil',
+                        'placement' => 'prepend',
+                        'tagName' => 'i',
+                    ],
+                ],
+            ],
+            [
+                'label' => 'Edit job data',
+                'text_domain' => __NAMESPACE__,
+                'route' => 'cms-user/org',
+                'params' => ['action' => 'update'],
+                'resource' => 'route/cms-user/org',
+                'privilege' => 'update',
+                'order' => 750,
+                'twbs' => [
+                    'icon' => [
+                        'type' => 'fa',
+                        'content' => 'pencil',
+                        'placement' => 'prepend',
+                        'tagName' => 'i',
+                    ],
+                ],
+            ],
+            [
+                'order' => 800,
+                'uri' => '',
+                'class' => 'divider',
+            ],
         ],
     ],
     'router' => [

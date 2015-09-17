@@ -13,26 +13,34 @@ namespace CmsUserOrg\Mvc\Controller;
 use Zend\Http\PhpEnvironment\Response,
     Zend\Mvc\Controller\AbstractActionController,
     Zend\Mvc\Controller\Plugin\FlashMessenger,
-    Zend\View\Model\ViewModel;
+    Zend\View\Model\ViewModel,
+    CmsCommon\Service\DomainServiceInterface;
 
 class UserController extends AbstractActionController
 {
+    /**
+     * @var DomainServiceInterface
+     */
+    protected $userOrgService;
+
+    /**
+     * __construct
+     */
+    public function __construct(DomainServiceInterface $userOrgService)
+    {
+        $this->userOrgService = $userOrgService;
+    }
+
     /**
      * {@inheritDoc}
      */
     public function indexAction()
     {
-        $identity = $this->cmsUserAuthentication()->getIdentity();
-        $url = $this->url()->fromRoute('cms-user/org');
-        if (!$identity) {
-            return $this->redirect()->toRoute('cms-user/login', [],
-                ['query' => ['redirect' => rawurldecode($url)]]
-            );
+        if ($this->cmsAuthentication()->getIdentity()->getOrgMetadata()) {
+            return $this->redirect()->toRoute(null, ['action' => 'update']);
         }
-        if ($identity->getOrgMetadata()) {
-            return $this->redirect()->toRoute('cms-user/org', ['action' => 'update']);
-        }
-        return $this->redirect()->toRoute('cms-user/org', ['action' => 'create']);
+
+        return $this->redirect()->toRoute(null, ['action' => 'create']);
     }
 
     /**
@@ -109,70 +117,64 @@ class UserController extends AbstractActionController
 
     /**
      * Updates user's job info
-     * 
+     *
      * @return ViewModel|Response
      */
     public function updateAction()
     {
-        $identity = $this->cmsUserAuthentication()->getIdentity();
-        $url = $this->url()->fromRoute('cms-user/org', ['action' => 'update']);
-        
-        if (!$identity) {
-            return $this->redirect()->toRoute('cms-user/login', [],
-                ['query' => ['redirect' => rawurldecode($url)]]
-            );
-        } elseif (!$identity->getOrgMetadata()) {
-            return $this->redirect()->toRoute('cms-user/org', ['action' => 'create']);
+        $identity = $this->cmsAuthentication()->getIdentity();
+        if (!($data = $identity->getOrgMetadata())) {
+            return $this->redirect()->toRoute(null, ['action' => 'create']);
         }
-        
-        $post = [];
+
+        $url = $this->url()->fromRoute(null, ['action' => 'update']);
         $prg = $this->prg($url, true);
         // Return early if prg plugin returned a response
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg !== false) {
             $post = $prg;
+        } else {
+            $post = [];
         }
-        
-        $service = $this->cmsUser();
-        $form = $service->getForm();
-        $form->bind($identity);
-        
-        $viewModel = new ViewModel();
-        
-        if ($post) {
-            $validationGroup = [
-                'user' => [
-                    'orgMetadata' => [
-                        'description',
-                        'annotation',
-                        'organization',
-                        'position',
-                        'since',
-                        'to',
-                        'contactMetadata' => [
-                            'phones',
-                            'emails',
-                            'messengers',
-                        ],
-                    ],
+
+        try {
+        $form = $this->userOrgService->getForm();
+        $form->setAttribute('action', $url);
+        //$form->bind($data);
+        $form->setElementGroup([
+            //'orgMetadata' => [
+                'description',
+                'annotation',
+                'organization',
+                'position',
+                'since',
+                'to',
+                'contactMetadata' => [
+                    'phones',
+                    'emails',
+                    'messengers',
                 ],
-            ];
-            if ($form->hasCaptcha()) {
-                $validationGroup[] = $form->getCaptchaElementName();
-            }
-            if ($form->hasCsrf()) {
-                $validationGroup[] = $form->getCsrfElementName();
-            }
-            $form->setValidationGroup($validationGroup);
-            
-            if ($service->save($post)) {
-                $this->flashMessenger()
-                    ->setNamespace($form->getName() . '-' . FlashMessenger::NAMESPACE_SUCCESS)
-                    ->addMessage('Data has been successfully saved');
-            }
+            //],
+        ]);
+        } catch (\Exception $e) {
+            echo '<pre>';
+            echo $e->getMessage();
+            //echo $e->getTraceAsString();
+            exit;
         }
-        
+
+        $viewModel = new ViewModel();
+
+        if ($post && $form->setData($post)->isValid()) {
+            $data = $form->getData();
+            $this->userOrgService->getMapper()->save($data);
+
+            $this->flashMessenger()
+                ->setNamespace($form->getName() . '-' . FlashMessenger::NAMESPACE_SUCCESS)
+                ->addMessage('Data has been successfully saved');
+        }
+
         return $viewModel->setVariables(compact('form'));
     }
 }

@@ -1,8 +1,8 @@
 <?php 
 /**
- * CoolMS2 User organization module (http://www.coolms.com/)
- * 
- * @link      http://github.com/coolms/CmsUserOrg for the canonical source repository
+ * CoolMS2 User Organization Module (http://www.coolms.com/)
+ *
+ * @link      http://github.com/coolms/user-org for the canonical source repository
  * @copyright Copyright (c) 2006-2015 Altgraphic, ALC (http://www.altgraphic.com)
  * @license   http://www.coolms.com/license/new-bsd New BSD License
  * @author    Dmitry Popov <d.popov@altgraphic.com>
@@ -10,74 +10,58 @@
 
 namespace CmsUserOrg;
 
-$this->fieldset->get('since')->setOptions([
-        'day_attributes' => [
-            'class' => 'form-control',
-            'required' => true,
+/*$this->fieldset->get('since')->setOptions([
+    'day_attributes' => [
+        'class' => 'form-control',
+        'required' => true,
+    ],
+    'month_attributes' => [
+        'class' => 'form-control',
+        'required' => true,
+    ],
+    'year_attributes' => [
+        'class' => 'form-control',
+        'required' => true,
+    ],
+    'twb' => [
+        'decorators' => [
+            'formInline',
+            'col' => ['class' => 'col-xs-12 col-sm-6 form-date-select'],
         ],
-        'month_attributes' => [
-            'class' => 'form-control',
-            'required' => true,
-        ],
-        'year_attributes' => [
-            'class' => 'form-control',
-            'required' => true,
-        ],
-        'twb' => [
-            'decorators' => [
-                'formInline',
-                'col' => ['class' => 'col-xs-12 col-sm-6 form-date-select'],
-            ],
-        ],
-    ]);
+    ],
+]);
 
 $this->fieldset->get('to')->setOptions([
-        'day_attributes' => [
-            'class' => 'form-control',
+    'day_attributes' => [
+        'class' => 'form-control',
+    ],
+    'month_attributes' => [
+        'class' => 'form-control',
+    ],
+    'year_attributes' => [
+        'class' => 'form-control',
+    ],
+    'twb' => [
+        'decorators' => [
+            'formInline',
+            'col' => ['class' => 'col-xs-12 col-sm-6 form-date-select'],
         ],
-        'month_attributes' => [
-            'class' => 'form-control',
-        ],
-        'year_attributes' => [
-            'class' => 'form-control',
-        ],
-        'twb' => [
-            'decorators' => [
-                'formInline',
-                'col' => ['class' => 'col-xs-12 col-sm-6 form-date-select'],
-            ],
-        ],
-    ]);
+    ],
+]);
 
 $this->fieldset->get('description')->setOptions([
-        'twb' => [
-            'decorators' => [
-                'formInputGroup' => ['glyphicon' => ['name' => 'info-sign']],
-                'col',
-                'formGroup',
-            ],
+    'twb' => [
+        'decorators' => [
+            'formInputGroup' => ['glyphicon' => ['name' => 'info-sign']],
+            'col',
+            'formGroup',
         ],
-    ]);
+    ],
+]);
 
-$this->fieldset->get('annotation')->setAttributes(['rows' => 5]);
+$this->fieldset->get('annotation')->setAttributes(['rows' => 5]);*/
 
 ?>
-<fieldset>
-  <?= $this->legend; ?>
-  <?= $this->formRow($this->fieldset->get('organization')); ?>
-  <?= $this->formRow($this->fieldset->get('position')); ?>
-  <?= $this->formRow($this->fieldset->get('description')); ?>
-  <?= $this->formRow($this->fieldset->get('annotation')); ?>
-  <div class="form-group form-group-sm">
-    <?= $this->formRow($this->fieldset->get('since')); ?>
-    <?= $this->formRow($this->fieldset->get('to')); ?>
-    <div class="col-sm-12">
-      <span class="help-block">
-        <?= $this->translate('Please specify the period of work in the company/organization. If this is your current place of work, leave "To" field blank', __NAMESPACE__); ?>
-      </span>
-    </div>
-  </div>
-  <?php if ($this->fieldset->has('contactMetadata')): ?>
-    <?= $this->formCollection($this->fieldset->get('contactMetadata')); ?>
-  <?php endif; ?>
-</fieldset>
+<?= $this->formCollection($this->fieldset, true, false);
+//$this->translate('Please specify the period of work in the company/organization. If this is your current place of work, leave "To" field blank', __NAMESPACE__); ?>
+

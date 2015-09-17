@@ -1,8 +1,8 @@
 <?php 
 /**
- * CoolMS2 User organization module (http://www.coolms.com/)
- * 
- * @link      http://github.com/coolms/CmsUserOrg for the canonical source repository
+ * CoolMS2 User Organization Module (http://www.coolms.com/)
+ *
+ * @link      http://github.com/coolms/user-org for the canonical source repository
  * @copyright Copyright (c) 2006-2015 Altgraphic, ALC (http://www.altgraphic.com)
  * @license   http://www.coolms.com/license/new-bsd New BSD License
  * @author    Dmitry Popov <d.popov@altgraphic.com>
@@ -12,6 +12,11 @@ namespace CmsUserOrg;
 
 $this->formRow()->setRenderMode('dynamic');
 $this->form->get('submit')->setValue('Update data');
-
 ?>
-<?= $this->render('cms-user-org/user/form');
+<?php
+try {
+    echo $this->render('cms-user-org/metadata/form');
+} catch(\Exception $e) {
+    echo $e->getMessage();
+    exit;
+}
