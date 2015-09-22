@@ -35,10 +35,19 @@ msgstr "Коротко о работе"
 msgid "Annotation"
 msgstr "О работе"
 
+msgid "Job experience"
+msgstr "Период работы"
+
 msgid "Since"
 msgstr "Дата трудоустройства"
 
+msgid "since"
+msgstr "Дата трудоустройства"
+
 msgid "To"
+msgstr "Дата увольнения"
+
+msgid "to"
 msgstr "Дата увольнения"
 
 msgid "Work contact metadata"

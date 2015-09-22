@@ -121,7 +121,7 @@ class UserController extends AbstractActionController
     public function updateAction()
     {
         $identity = $this->cmsAuthentication()->getIdentity();
-        if (!($data = $identity->getOrgMetadata())) {
+        if (!$identity->getOrgMetadata()) {
             return $this->redirect()->toRoute(null, ['action' => 'create']);
         }
 
@@ -154,6 +154,9 @@ class UserController extends AbstractActionController
         ]);
         $form->bind($identity);
 
+        //var_dump($identity->getOrgMetadata()->first()->getExperience()->getStartDate());
+        //var_dump($form->get('orgMetadata')->get(0)->get('experience')->get('startDate')->getValue());
+        
         $viewModel = new ViewModel();
 
         if ($post && $form->setData($post)->isValid()) {

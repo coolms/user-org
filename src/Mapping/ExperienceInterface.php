@@ -10,15 +10,9 @@
 
 namespace CmsUserOrg\Mapping;
 
-interface ExperienceInterface
-{
-    /**
-     * @return \DateTime
-     */
-    public function getSince();
+use CmsCommon\Mapping\Dateable\RangeableInterface;
 
-    /**
-     * @return \DateTime
-     */
-    public function getTo();
+interface ExperienceInterface extends RangeableInterface
+{
+    
 }
