@@ -46,10 +46,11 @@ class UserActionAssertion implements AssertionInterface
         if ($privilege === 'index') {
             return true;
         }
+
         if ($privilege === 'create') {
-            return !$this->identity->getOrgMetadata();
+            return !$this->identity->getOrgMetadata()->count();
         }
 
-        return $this->identity->getOrgMetadata();
+        return !!$this->identity->getOrgMetadata()->count();
     }
 }

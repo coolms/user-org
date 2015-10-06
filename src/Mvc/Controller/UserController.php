@@ -23,6 +23,8 @@ class UserController extends AbstractActionController
 
     /**
      * __construct
+     *
+     * @param UserServiceInterface $userService
      */
     public function __construct(UserServiceInterface $userService)
     {
@@ -43,73 +45,62 @@ class UserController extends AbstractActionController
 
     /**
      * Creates user's job info
-     * 
+     *
      * @return ViewModel|Response
      */
     public function createAction()
     {
-        $identity = $this->cmsUserAuthentication()->getIdentity();
-        $url = $this->url()->fromRoute('cms-user/org', ['action' => 'create']);
-        
-        if (!$identity) {
-            return $this->redirect()->toRoute('cms-user/login', ['action' => 'login'],
-                ['query' => ['redirect' => rawurldecode($url)]]
-            );
-        } elseif ($identity->getOrgMetadata()) {
-            return $this->redirect()->toRoute('cms-user/org', ['action' => 'update']);
+        $identity = $this->cmsAuthentication()->getIdentity();
+        if ($identity->getOrgMetadata()->count()) {
+            return $this->redirect()->toRoute(null, ['action' => 'update']);
         }
-        
-        $post = [];
+
+        $url = $this->url()->fromRoute(null, ['action' => 'create']);
         $prg = $this->prg($url, true);
         // Return early if prg plugin returned a response
         if ($prg instanceof Response) {
             return $prg;
         } elseif ($prg !== false) {
             $post = $prg;
+        } else {
+            $post = [];
         }
-        
-        $service = $this->cmsUser();
-        $form = $service->getForm();
-        $form->bind($identity);
-        
-        $viewModel = new ViewModel();
-        
-        if ($post) {
-            $validationGroup = [
-                'user' => [
-                    'orgMetadata' => [
-                        'description',
-                        'annotation',
-                        'organization',
-                        'position',
-                        'since',
-                        'to',
-                        'contactMetadata' => [
-                            'phones',
-                            'emails',
-                            'messengers',
-                        ],
-                    ],
+
+        $form = $this->getUserService()->getForm();
+        $form->setAttribute('action', $url);
+        $form->setElementGroup([
+            'orgMetadata' => [
+                'description',
+                'annotation',
+                'organization',
+                'position',
+                'experience',
+                'contactMetadata' => [
+                    'phones',
+                    'emails',
+                    'messengers',
                 ],
-            ];
-            if ($form->hasCaptcha()) {
-                $validationGroup[] = $form->getCaptchaElementName();
-            }
-            if ($form->hasCsrf()) {
-                $validationGroup[] = $form->getCsrfElementName();
-            }
-            $form->setValidationGroup($validationGroup);
-            
-            if ($service->save($post)) {
-                $this->flashMessenger()
-                    ->setNamespace($form->getName() . '-' . FlashMessenger::NAMESPACE_SUCCESS)
-                    ->addMessage('Data has been successfully saved');
-                $url = $this->url()->fromRoute('cms-user/org', ['action' => 'update']);
+            ],
+        ]);
+        $form->bind($identity);
+
+        $viewModel = new ViewModel();
+
+        if ($post && $form->setData($post)->isValid()) {
+            $identity = $form->getData();
+            $this->getUserService()->getMapper()->save($identity);
+
+            $this->flashMessenger()
+                ->setNamespace($form->getName() . '-' . FlashMessenger::NAMESPACE_SUCCESS)
+                ->addMessage('Data has been successfully saved');
+
+            if ($identity->getOrgMetadata()->count()) {
+                $url = $this->url()->fromRoute(null, ['action' => 'update']);
                 $form->setAttribute('action', $url);
                 $viewModel->setTemplate('cms-user-org/user/update');
             }
         }
-        
+
         return $viewModel->setVariables(compact('form'));
     }
 
@@ -121,7 +112,7 @@ class UserController extends AbstractActionController
     public function updateAction()
     {
         $identity = $this->cmsAuthentication()->getIdentity();
-        if (!$identity->getOrgMetadata()) {
+        if (!$identity->getOrgMetadata()->count()) {
             return $this->redirect()->toRoute(null, ['action' => 'create']);
         }
 
@@ -157,12 +148,18 @@ class UserController extends AbstractActionController
         $viewModel = new ViewModel();
 
         if ($post && $form->setData($post)->isValid()) {
-            $data = $form->getData();
-            $this->getUserService()->getMapper()->save($data);
+            $identity = $form->getData();
+            $this->getUserService()->getMapper()->save($identity);
 
             $this->flashMessenger()
                 ->setNamespace($form->getName() . '-' . FlashMessenger::NAMESPACE_SUCCESS)
                 ->addMessage('Data has been successfully saved');
+
+            if (!$identity->getOrgMetadata()->count()) {
+                $url = $this->url()->fromRoute(null, ['action' => 'create']);
+                $form->setAttribute('action', $url);
+                $viewModel->setTemplate('cms-user-org/user/create');
+            }
         }
 
         return $viewModel->setVariables(compact('form'));
