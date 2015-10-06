@@ -12,11 +12,6 @@ namespace CmsUserOrg;
 
 $this->formRow()->setRenderMode('dynamic');
 $this->form->get('submit')->setValue('Update data');
+
 ?>
-<?php
-try {
-    echo $this->render('cms-user-org/metadata/form');
-} catch(\Exception $e) {
-    echo $e->getMessage();
-    exit;
-}
+<?= $this->render('cms-user-org/metadata/form');
