@@ -10,56 +10,14 @@
 
 namespace CmsUserOrg;
 
-/*$this->fieldset->get('since')->setOptions([
-    'day_attributes' => [
-        'class' => 'form-control',
-        'required' => true,
-    ],
-    'month_attributes' => [
-        'class' => 'form-control',
-        'required' => true,
-    ],
-    'year_attributes' => [
-        'class' => 'form-control',
-        'required' => true,
-    ],
-    'twb' => [
-        'decorators' => [
-            'formInline',
-            'col' => ['class' => 'col-xs-12 col-sm-6 form-date-select'],
-        ],
+$this->fieldset->get('description')->setOption('twbs', [
+    'icon' => [
+        'content' => 'info-sign',
+        'placement' => 'prepend',
     ],
 ]);
 
-$this->fieldset->get('to')->setOptions([
-    'day_attributes' => [
-        'class' => 'form-control',
-    ],
-    'month_attributes' => [
-        'class' => 'form-control',
-    ],
-    'year_attributes' => [
-        'class' => 'form-control',
-    ],
-    'twb' => [
-        'decorators' => [
-            'formInline',
-            'col' => ['class' => 'col-xs-12 col-sm-6 form-date-select'],
-        ],
-    ],
-]);
-
-$this->fieldset->get('description')->setOptions([
-    'twb' => [
-        'decorators' => [
-            'formInputGroup' => ['glyphicon' => ['name' => 'info-sign']],
-            'col',
-            'formGroup',
-        ],
-    ],
-]);
-
-$this->fieldset->get('annotation')->setAttributes(['rows' => 5]);*/
+$this->fieldset->get('annotation')->setAttributes(['rows' => 5]);
 
 ?>
 <?= $this->formCollection($this->fieldset, true, false);
