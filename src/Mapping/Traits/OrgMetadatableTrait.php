@@ -10,8 +10,8 @@
 
 namespace CmsUserOrg\Mapping\Traits;
 
-use Doctrine\Common\Collections\ArrayCollection,
-    Doctrine\Common\Collections\Collection,
+use ArrayObject,
+    Traversable,
     CmsUserOrg\Exception\InvalidMetadataException,
     CmsUserOrg\Mapping\MetadataInterface;
 
@@ -42,11 +42,11 @@ trait OrgMetadatableTrait
      */
     public function __construct()
     {
-        $this->orgMetadata = new ArrayCollection();
+        $this->orgMetadata = new ArrayObject($this->orgMetadata);
     }
 
     /**
-     * @param array|\Traversable $metadata
+     * @param array|Traversable $metadata
      */
     public function setOrgMetadata($metadata)
     {
@@ -55,17 +55,17 @@ trait OrgMetadatableTrait
     }
 
     /**
-     * @param array|\Traversable|MetadataInterface $metadata
+     * @param array|Traversable|MetadataInterface $metadata
      * @throws InvalidMetadataException
      */
     public function addOrgMetadata($metadata)
     {
         if ($metadata instanceof MetadataInterface) {
-            $this->getOrgMetadata()->add($metadata);
+            $this->orgMetadata[] = $metadata;
             if (!$metadata->getUser()) {
             	$metadata->setUser($this);
             }
-        } elseif (!is_array($metadata) && !$metadata instanceof \Traversable) {
+        } elseif (!is_array($metadata) && !$metadata instanceof Traversable) {
             throw InvalidMetadataException::invalidMetadataInstance($metadata);
         } else {
             foreach ($metadata as $data) {
@@ -75,14 +75,18 @@ trait OrgMetadatableTrait
     }
 
     /**
-     * @param array|\Traversable|MetadataInterface $metadata
+     * @param array|Traversable|MetadataInterface $metadata
      * @throws InvalidMetadataException
      */
     public function removeOrgMetadata($metadata)
     {
         if ($metadata instanceof MetadataInterface) {
-            $this->getOrgMetadata()->removeElement($metadata);
-        } elseif (!is_array($metadata) && !$metadata instanceof \Traversable) {
+            foreach ($this->orgMetadata as $key => $data) {
+                if ($data === $metadata) {
+                    unset($this->orgMetadata[$key]);
+                }
+            }
+        } elseif (!is_array($metadata) && !$metadata instanceof Traversable) {
             throw InvalidMetadataException::invalidMetadataInstance($metadata);
         } else {
             foreach ($metadata as $meta) {
@@ -96,11 +100,13 @@ trait OrgMetadatableTrait
      */
     public function clearOrgMetadata()
     {
-        $this->getOrgMetadata()->clear();
+        foreach ($this->orgMetadata as $data) {
+            $this->removeOrgMetadata($data);
+        }
     }
 
     /**
-     * @return Collection
+     * @return MetadataInterface[]
      */
     public function getOrgMetadata()
     {

@@ -10,9 +10,8 @@
 
 namespace CmsUserOrg\Mapping\Traits;
 
-use Traversable,
-    Doctrine\Common\Collections\ArrayCollection,
-    Doctrine\Common\Collections\Collection,
+use ArrayObject,
+    Traversable,
     CmsUserOrg\Exception\InvalidMetadataException,
     CmsUserOrg\Mapping\MetadataInterface;
 
@@ -32,7 +31,7 @@ trait UserMetadatableTrait
      */
     public function __construct()
     {
-        $this->userMetadata = new ArrayCollection();
+        $this->userMetadata = new ArrayObject($this->userMetadata);
     }
 
     /**
@@ -51,13 +50,16 @@ trait UserMetadatableTrait
     public function addUserMetadata($metadata)
     {
         if ($metadata instanceof MetadataInterface) {
-            $this->getUserMetadata()->add($metadata);
+            $this->orgMetadata[] = $metadata;
+            if (!$metadata->getOrganization()) {
+                $metadata->setOrganization($this);
+            }
         } elseif (!is_array($metadata) && !$metadata instanceof Traversable) {
             throw InvalidMetadataException::invalidMetadataInstance($metadata);
-        }
-
-        foreach ($metadata as $data) {
-            $this->addUserMetadata($data);
+        } else {
+            foreach ($metadata as $data) {
+                $this->addUserMetadata($data);
+            }
         }
     }
 
@@ -68,13 +70,17 @@ trait UserMetadatableTrait
     public function removeUserMetadata($metadata)
     {
         if ($metadata instanceof MetadataInterface) {
-            $this->getUserMetadata()->removeElement($metadata);
+            foreach ($this->userMetadata as $key => $data) {
+                if ($data === $metadata) {
+                    unset($this->userMetadata[$key]);
+                }
+            }
         } elseif (!is_array($metadata) && !$metadata instanceof Traversable) {
             throw InvalidMetadataException::invalidMetadataInstance($metadata);
-        }
-
-        foreach ($metadata as $data) {
-            $this->removeUserMetadata($data);
+        } else {
+            foreach ($metadata as $data) {
+                $this->removeUserMetadata($data);
+            }
         }
     }
 
@@ -83,11 +89,13 @@ trait UserMetadatableTrait
      */
     public function clearUserMetadata()
     {
-        $this->getUserMetadata()->clear();
+        foreach ($this->userMetadata as $data) {
+            $this->removeUserMetadata($data);
+        }
     }
 
     /**
-     * @return Collection
+     * @return MetadataInterface[]
      */
     public function getUserMetadata()
     {
