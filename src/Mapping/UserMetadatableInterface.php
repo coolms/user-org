@@ -10,22 +10,23 @@
 
 namespace CmsUserOrg\Mapping;
 
-use Doctrine\Common\Collections\Collection;
+use Traversable,
+    Doctrine\Common\Collections\Collection;
 
 interface UserMetadatableInterface
 {
     /**
-     * @param array|\Traversable $metadata
+     * @param array|Traversable $metadata
      */
     public function setUserMetadata($metadata);
 
     /**
-     * @param array|\Traversable|MetadataInterface $metadata
+     * @param array|Traversable|MetadataInterface $metadata
      */
     public function addUserMetadata($metadata);
 
     /**
-     * @param array|\Traversable|MetadataInterface $metadata
+     * @param array|Traversable|MetadataInterface $metadata
      */
     public function removeUserMetadata($metadata);
 

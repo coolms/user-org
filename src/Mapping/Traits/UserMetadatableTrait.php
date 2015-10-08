@@ -10,7 +10,8 @@
 
 namespace CmsUserOrg\Mapping\Traits;
 
-use Doctrine\Common\Collections\ArrayCollection,
+use Traversable,
+    Doctrine\Common\Collections\ArrayCollection,
     Doctrine\Common\Collections\Collection,
     CmsUserOrg\Exception\InvalidMetadataException,
     CmsUserOrg\Mapping\MetadataInterface;
@@ -35,7 +36,7 @@ trait UserMetadatableTrait
     }
 
     /**
-     * @param array|\Traversable $metadata
+     * @param array|Traversable $metadata
      */
     public function setUserMetadata($metadata)
     {
@@ -44,14 +45,14 @@ trait UserMetadatableTrait
     }
 
     /**
-     * @param array|\Traversable|MetadataInterface $metadata
+     * @param array|Traversable|MetadataInterface $metadata
      * @throws InvalidMetadataException
      */
     public function addUserMetadata($metadata)
     {
         if ($metadata instanceof MetadataInterface) {
             $this->getUserMetadata()->add($metadata);
-        } elseif (!is_array($metadata) && !$metadata instanceof \Traversable) {
+        } elseif (!is_array($metadata) && !$metadata instanceof Traversable) {
             throw InvalidMetadataException::invalidMetadataInstance($metadata);
         }
 
@@ -61,14 +62,14 @@ trait UserMetadatableTrait
     }
 
     /**
-     * @param array|\Traversable|MetadataInterface $metadata
+     * @param array|Traversable|MetadataInterface $metadata
      * @throws InvalidMetadataException
      */
     public function removeUserMetadata($metadata)
     {
         if ($metadata instanceof MetadataInterface) {
             $this->getUserMetadata()->removeElement($metadata);
-        } elseif (!is_array($metadata) && !$metadata instanceof \Traversable) {
+        } elseif (!is_array($metadata) && !$metadata instanceof Traversable) {
             throw InvalidMetadataException::invalidMetadataInstance($metadata);
         }
 
