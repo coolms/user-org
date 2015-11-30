@@ -46,16 +46,20 @@ trait OrgMetadatableTrait
 
     /**
      * @param array|Traversable $metadata
+     * @return self
      */
     public function setOrgMetadata($metadata)
     {
         $this->clearOrgMetadata();
         $this->addOrgMetadata($metadata);
+
+        return $this;
     }
 
     /**
      * @param array|Traversable|MetadataInterface $metadata
      * @throws InvalidMetadataException
+     * @return self
      */
     public function addOrgMetadata($metadata)
     {
@@ -71,11 +75,14 @@ trait OrgMetadatableTrait
                 $this->addOrgMetadata($data);
             }
         }
+
+        return $this;
     }
 
     /**
      * @param array|Traversable|MetadataInterface $metadata
      * @throws InvalidMetadataException
+     * @return self
      */
     public function removeOrgMetadata($metadata)
     {
@@ -92,16 +99,23 @@ trait OrgMetadatableTrait
                 $this->removeOrgMetadata($meta);
             }
         }
+
+        return $this;
     }
 
     /**
      * Removes all user metadata
+     *
+     * @return self
      */
     public function clearOrgMetadata()
     {
+        /* @var $data MetadataInterface */
         foreach ($this->orgMetadata as $data) {
             $this->removeOrgMetadata($data);
         }
+
+        return $this;
     }
 
     /**

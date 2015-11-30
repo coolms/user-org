@@ -10,8 +10,7 @@
 
 namespace CmsUserOrg\Mapping\Traits;
 
-use ArrayObject,
-    Traversable,
+use Traversable,
     CmsUserOrg\Exception\InvalidMetadataException,
     CmsUserOrg\Mapping\MetadataInterface;
 
@@ -31,21 +30,25 @@ trait UserMetadatableTrait
      */
     public function __construct()
     {
-        $this->userMetadata = new ArrayObject($this->userMetadata);
+        
     }
 
     /**
      * @param array|Traversable $metadata
+     * @return self
      */
     public function setUserMetadata($metadata)
     {
         $this->clearUserMetadata();
         $this->addUserMetadata($metadata);
+
+        return $this;
     }
 
     /**
      * @param array|Traversable|MetadataInterface $metadata
      * @throws InvalidMetadataException
+     * @return self
      */
     public function addUserMetadata($metadata)
     {
@@ -61,11 +64,14 @@ trait UserMetadatableTrait
                 $this->addUserMetadata($data);
             }
         }
+
+        return $this;
     }
 
     /**
      * @param array|Traversable|MetadataInterface $metadata
      * @throws InvalidMetadataException
+     * @return self
      */
     public function removeUserMetadata($metadata)
     {
@@ -82,16 +88,22 @@ trait UserMetadatableTrait
                 $this->removeUserMetadata($data);
             }
         }
+
+        return $this;
     }
 
     /**
      * Removes all user metadata
+     *
+     * @return self
      */
     public function clearUserMetadata()
     {
         foreach ($this->userMetadata as $data) {
             $this->removeUserMetadata($data);
         }
+
+        return $this;
     }
 
     /**

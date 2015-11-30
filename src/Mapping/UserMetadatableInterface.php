@@ -17,21 +17,26 @@ interface UserMetadatableInterface
 {
     /**
      * @param array|Traversable $metadata
+     * @return self
      */
     public function setUserMetadata($metadata);
 
     /**
      * @param array|Traversable|MetadataInterface $metadata
+     * @return self
      */
     public function addUserMetadata($metadata);
 
     /**
      * @param array|Traversable|MetadataInterface $metadata
+     * @return self
      */
     public function removeUserMetadata($metadata);
 
     /**
      * Removes all user metadata
+     *
+     * @return self
      */
     public function clearUserMetadata();
 

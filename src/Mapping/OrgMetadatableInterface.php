@@ -10,27 +10,33 @@
 
 namespace CmsUserOrg\Mapping;
 
-use CmsOrg\Mapping\PositionInterface;
+use Traversable,
+    CmsOrg\Mapping\PositionInterface;
 
 interface OrgMetadatableInterface
 {
     /**
-     * @param array|\Traversable $metadata
+     * @param array|Traversable $metadata
+     * @return self
      */
     public function setOrgMetadata($metadata);
 
     /**
-     * @param array|\Traversable|MetadataInterface $metadata
+     * @param array|Traversable|MetadataInterface $metadata
+     * @return self
      */
     public function addOrgMetadata($metadata);
 
     /**
-     * @param array|\Traversable|MetadataInterface $metadata
+     * @param array|Traversable|MetadataInterface $metadata
+     * @return self
      */
     public function removeOrgMetadata($metadata);
 
     /**
      * Removes all organization metadata
+     *
+     * @return self
      */
     public function clearOrgMetadata();
 
