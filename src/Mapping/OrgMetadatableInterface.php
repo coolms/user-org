@@ -10,7 +10,7 @@
 
 namespace CmsUserOrg\Mapping;
 
-use Doctrine\Common\Collections\Collection;
+use CmsOrg\Mapping\PositionInterface;
 
 interface OrgMetadatableInterface
 {
@@ -35,7 +35,8 @@ interface OrgMetadatableInterface
     public function clearOrgMetadata();
 
     /**
-     * @return Collection
+     * @param bool $current
+     * @return MetadataInterface[]
      */
-    public function getOrgMetadata();
+    public function getOrgMetadata($current = false);
 }

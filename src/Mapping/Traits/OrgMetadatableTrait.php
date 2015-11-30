@@ -10,8 +10,7 @@
 
 namespace CmsUserOrg\Mapping\Traits;
 
-use ArrayObject,
-    Traversable,
+use Traversable,
     CmsUserOrg\Exception\InvalidMetadataException,
     CmsUserOrg\Mapping\MetadataInterface;
 
@@ -42,7 +41,7 @@ trait OrgMetadatableTrait
      */
     public function __construct()
     {
-        $this->orgMetadata = new ArrayObject($this->orgMetadata);
+        
     }
 
     /**
@@ -106,10 +105,23 @@ trait OrgMetadatableTrait
     }
 
     /**
+     * @param bool $current
      * @return MetadataInterface[]
      */
-    public function getOrgMetadata()
+    public function getOrgMetadata($current = false)
     {
-        return $this->orgMetadata;
+        if (!$current) {
+            return $this->orgMetadata;
+        }
+
+        $meta = [];
+        /* @var $data MetadataInterface */
+        foreach ($this->orgMetadata as $key => $data) {
+            if (null === $data->getExperience()->getEndDate()) {
+                $meta[$key] = $data;
+            }
+        }
+
+        return $meta;
     }
 }
